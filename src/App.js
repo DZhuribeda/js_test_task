@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import { createStore, compose,combineReducers } from 'redux';
-import { Provider } from 'react-redux';
+import { createStore,  compose,combineReducers } from 'redux';
+import { Provider, connect } from 'react-redux';
 import {
   ReduxRouter,
   routerStateReducer,
@@ -18,32 +18,17 @@ import AuthorsPage from './pages/AuthorsPage.jsx';
 import BookListPage from './pages/BookListPage.jsx';
 
 
-
-
-// export let createStore = initialCreateStore;
-const reducer = combineReducers({
-  router: routerStateReducer,
-  reducers
-});
-
-const store = compose(
-  reduxReactRouter({ createHistory })
-)(createStore)(reducer);
-
-
 export default class App extends Component {
   render() {
 	return (
 	  <div>
-		<Provider store={store}>
 		  <ReduxRouter>
-			<Route path="/" component={BasicLayout}>
-				<Route path="books" component={BookListPage}/>
-				<Route path="authors" component={AuthorsPage}/>
+  			<Route path="/" component={BasicLayout}>
+  				<Route path="books" component={BookListPage}/>
+  				<Route path="authors" component={AuthorsPage}/>
 
-			</Route>
+  			</Route>
 		  </ReduxRouter>
-		</Provider>
 	  </div>
 	);
   }

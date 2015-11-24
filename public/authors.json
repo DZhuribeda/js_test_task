@@ -1,0 +1,35 @@
+{
+	"authors": [
+        {
+            "name": "Aldous Huxley",
+            "biography": "Nineteen Eighty-Four, sometimes published as 1984, is a dystopian novel by English author George Orwell published in 1949.[1][2] The novel is set in Airstrip One (formerly known as Great Britain), a province of the superstate Oceania in a world of perpetual war, omnipresent government surveillance and public manipulation",
+            "id": 1,
+            "books": [{"name": "Brave new world", "id": "1"},
+                      {"name": "The Doors of Perception", "id": "2"}]
+        },
+        {
+            "name": "George Orwell",
+            "biography": "A writer is a person who uses written words in various styles and techniques to communicate ideas. Writers produce various forms of literary art and creative writing such as novels, short stories, poetry",
+            "books": [{"name": "1984", "id": "3"}],
+            "id": 2
+        },
+        {
+            "name": "Sergey Dyachenko",
+            "biography": "Writers can produce material across a number of genres, fictional or non-fictional. Other writers use multiple media – for example, graphics or illustration – to enhance the communication of their ideas",
+            "books": [{"name": "Vita Nostra", "id": "4"}],
+            "id": 3
+        },
+        {
+            "name": "Marina Dyachenko",
+            "biography": "Nineteen Eighty-Four, sometimes published as 1984, is a dystopian novel by English author George Orwell published in 1949.[1][2] The novel is set in Airstrip One (formerly known as Great Britain), a province of the superstate Oceania in a world of perpetual war, omnipresent government surveillance and public manipulation",
+            "books": [{"name": "Vita Nostra", "id": "5"}],
+            "id": 4
+        },
+        {
+            "name": "Thomas Campbell",
+            "biography": "As well as producing their own written works, writers often write on how they write (that is, the process they use);[3] why they write (that is, their motivation);[4] and also comment on the work of other wc manipulation",
+            "books": [{"name": "The Campbell Plan", "id": "6"}],
+            "id": 5
+        }
+    ]
+}

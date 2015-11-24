@@ -1,20 +1,6 @@
-const initialState = {
-  friends: [1, 2, 3],
-  friendsById: {
-    1: {
-      id: 1,
-      name: 'Theodore Roosevelt'
-    },
-    2: {
-      id: 2,
-      name: 'Abraham Lincoln'
-    },
-    3: {
-      id: 3,
-      name: 'George Washington'
-    }
-  }
-};
+import ApiClient from './api/ApiClient'
+
+const initialState = ApiClient().get('./data/books.json')
 
 export default function books(state = initialState, action) {
   switch (action.type) {
