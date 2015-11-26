@@ -1,19 +1,16 @@
 import ApiClient from '../api/ApiClient'
 import * as types from '../constants';
 
-const initialState = {
-	authors : []
-}
 
-export default function authors(state = initialState, action) {
+export default function authors(state = [], action) {
   switch (action.type) {
   	case types.ADD_AUTHOR:
-  		return state.authors.push(action.author);
+  		return [...state, action.author];
     default:
       return state;
   }
 }
 
-export function getAuthors(state) {
+export function getAuthors() {
   return new ApiClient().getAuthors();
 }
