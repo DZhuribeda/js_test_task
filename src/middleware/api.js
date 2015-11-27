@@ -1,123 +1,160 @@
-import { Schema, arrayOf, normalize } from 'normalizr'
-import { camelizeKeys } from 'humps'
-import 'isomorphic-fetch'
+import 'isomorphic-fetch';
+import { AUTHOR_URL, BOOK_URL } from '../actions'
+export const LOAD_DATA = Symbol('Load Data');
 
-// Extracts the next page URL from Github API response.
-function getNextPageUrl(response) {
-  const link = response.headers.get('link')
-  if (!link) {
-    return null
+const mjson = {
+    "books": [
+        {
+            "name": "Brave new world",
+            "authors": [{
+                "name": "Aldous Huxley",
+                "id": 1
+            }],
+            "short": "Winston works at the Ministry of Truth, or Minitrue, as an editor responsible for historical rev",
+            "genre": "dystopia",
+            "id": 1
+        },
+        {
+            "name": "The Doors of Perception",
+            "authors": [{
+                "name": "Aldous Huxley",
+                "id": 1
+            }],
+            "short": "Winston Smith lives in Airstrip One, the ruins of an England ravaged by war, civil conflict, and revolution",
+            "genre": "others",
+            "id": 2
+        },
+        {
+            "name": "1984",
+            "authors": [{
+                "name": "George Orwell",
+                "id": 2
+            }],
+            "genre": "dystopia",
+            "short": "The story of Winston Smith begins on 4 April 1984: It was a bright cold day in April, and the clocks were striking thirteen yet he is uncertain of the true date, given the régime's continual rewriting and manipulation of history.[29] Smiths memories and his reading of the proscribed book",
+            "id": 3
+        },
+        {
+            "name" : "Vita Nostra",
+            "authors": [{
+                "name": "Sergey Dyachenko",
+                "id": 3
+            },{
+                "name": "Marina Dyachenko",
+                "id": 4
+            }],
+            "genre": "fantastic",
+            "short": "The heroine of the novel has been forced into a seemingly inconceivable situation. Against her will, she must ent",
+            "id": 4
+        },
+        {
+            "name" : "The Campbell Plan",
+            "authors": [{
+                "name": "Thomas Campbell",
+                "id": 5
+            }],
+            "genre": "action",
+            "short": "In the 1980s, T. Colin Campbell, PhD, co-directed a study of more than 4 dozen diseases and 367 items of socio-economic, lifestyle, nutrition, and genetic information ",
+            "id": 6
+        }
+    ],
+    "authors": [
+        {
+            "name": "Aldous Huxley",
+            "biography": "Nineteen Eighty-Four, sometimes published as 1984, is a dystopian novel by English author George Orwell published in 1949.[1][2] The novel is set in Airstrip One (formerly known as Great Britain), a province of the superstate Oceania in a world of perpetual war, omnipresent government surveillance and public manipulation",
+            "id": 1,
+            "books": [{"name": "Brave new world", "id": "1"},
+                      {"name": "The Doors of Perception", "id": "2"}]
+        },
+        {
+            "name": "George Orwell",
+            "biography": "A writer is a person who uses written words in various styles and techniques to communicate ideas. Writers produce various forms of literary art and creative writing such as novels, short stories, poetry",
+            "books": [{"name": "1984", "id": "3"}],
+            "id": 2
+        },
+        {
+            "name": "Sergey Dyachenko",
+            "biography": "Writers can produce material across a number of genres, fictional or non-fictional. Other writers use multiple media – for example, graphics or illustration – to enhance the communication of their ideas",
+            "books": [{"name": "Vita Nostra", "id": "4"}],
+            "id": 3
+        },
+        {
+            "name": "Marina Dyachenko",
+            "biography": "Nineteen Eighty-Four, sometimes published as 1984, is a dystopian novel by English author George Orwell published in 1949.[1][2] The novel is set in Airstrip One (formerly known as Great Britain), a province of the superstate Oceania in a world of perpetual war, omnipresent government surveillance and public manipulation",
+            "books": [{"name": "Vita Nostra", "id": "5"}],
+            "id": 4
+        },
+        {
+            "name": "Thomas Campbell",
+            "biography": "As well as producing their own written works, writers often write on how they write (that is, the process they use);[3] why they write (that is, their motivation);[4] and also comment on the work of other wc manipulation",
+            "books": [{"name": "The Campbell Plan", "id": "6"}],
+            "id": 5
+        }
+    ]
+}
+
+function myfetch(url){
+  let data = [];
+  let message = '';
+  switch(url){
+  case BOOK_URL:
+    data = [...mjson.books];
+    break;
+  case AUTHOR_URL:
+    data = [...mjson.authors];
+    break;
+  default:
+    message = 'URL not found';
   }
 
-  const nextLink = link.split(',').find(s => s.indexOf('rel="next"') > -1)
-  if (!nextLink) {
-    return null
+  let result = {};
+  if (message)
+  result = {
+    then(succesHandler){
+    return this;
+    },
+    err(errHandler){
+    errHandler(message);
+    }
+  }
+  else
+  result = {
+      then(succesHandler){
+    succesHandler(data);
+    return this;
+    },
+    err(errHandler){
+    return this;
+    }
   }
 
-  return nextLink.split('')[0].slice(1, -1)
+  return result;
 }
 
-const API_ROOT = 'https://api.github.com/'
-
-// Fetches an API response and normalizes the result JSON according to schema.
-// This makes every API response have the same shape, regardless of how nested it was.
-function callApi(endpoint, schema) {
-  const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint
-
-  return fetch(fullUrl)
-    .then(response =>
-      response.json().then(json => ({ json, response }))
-    ).then(({ json, response }) => {
-      if (!response.ok) {
-        return Promise.reject(json)
-      }
-
-      const camelizedJson = camelizeKeys(json)
-      const nextPageUrl = getNextPageUrl(response) || undefined
-
-      return Object.assign({},
-        normalize(camelizedJson, schema),
-        { nextPageUrl }
-      )
-    })
-}
-
-// We use this Normalizr schemas to transform API responses from a nested form
-// to a flat form where repos and users are placed in `entities`, and nested
-// JSON objects are replaced with their IDs. This is very convenient for
-// consumption by reducers, because we can easily build a normalized tree
-// and keep it updated as we fetch more data.
-
-// Read more about Normalizr: https://github.com/gaearon/normalizr
-
-const userSchema = new Schema('users', {
-  idAttribute: 'login'
-})
-
-const repoSchema = new Schema('repos', {
-  idAttribute: 'fullName'
-})
-
-repoSchema.define({
-  owner: userSchema
-})
-
-// Schemas for Github API responses.
-export const Schemas = {
-  USER: userSchema,
-  USER_ARRAY: arrayOf(userSchema),
-  REPO: repoSchema,
-  REPO_ARRAY: arrayOf(repoSchema)
-}
-
-// Action key that carries API call info interpreted by this Redux middleware.
-export const CALL_API = Symbol('Call API')
-
-// A Redux middleware that interprets actions with CALL_API info specified.
-// Performs the call and promises when such actions are dispatched.
 export default store => next => action => {
-  const callAPI = action[CALL_API]
-  if (typeof callAPI === 'undefined') {
-    return next(action)
+
+  const loadData = action[LOAD_DATA];
+
+  if (typeof loadData === 'undefined') {
+    return next(action);
   }
 
-  let { endpoint } = callAPI
-  const { schema, types } = callAPI
-
-  if (typeof endpoint === 'function') {
-    endpoint = endpoint(store.getState())
-  }
-
-  if (typeof endpoint !== 'string') {
-    throw new Error('Specify a string endpoint URL.')
-  }
-  if (!schema) {
-    throw new Error('Specify one of the exported Schemas.')
-  }
-  if (!Array.isArray(types) || types.length !== 3) {
-    throw new Error('Expected an array of three action types.')
-  }
-  if (!types.every(type => typeof type === 'string')) {
-    throw new Error('Expected action types to be strings.')
-  }
+  const { fullUrl, types } = loadData;
 
   function actionWith(data) {
-    const finalAction = Object.assign({}, action, data)
-    delete finalAction[CALL_API]
-    return finalAction
+    const finalAction = Object.assign({}, action, data);
+    delete finalAction[LOAD_DATA];
+    return finalAction;
   }
 
-  const [ requestType, successType, failureType ] = types
-  next(actionWith({ type: requestType }))
+  const [requestType, successType, failureType] = types;
 
-  return callApi(endpoint, schema).then(
-    response => next(actionWith({
-      response,
-      type: successType
-    })),
-    error => next(actionWith({
-      type: failureType,
-      error: error.message || 'Something bad happened'
-    }))
-  )
-}
+  next(actionWith({ type: requestType }));
+  myfetch(fullUrl)
+    .then(json => {
+    next(actionWith({type:successType, data:json}));
+    })
+  .err(error => {
+    next(actionWith({type:failureType, message:error}));
+  })
+};

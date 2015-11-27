@@ -1,16 +1,13 @@
-import ApiClient from '../api/ApiClient'
-import * as types from '../constants';
-
+import { AUTHOR_REQUEST, AUTHOR_SUCCESS, AUTHOR_FAILURE } from '../actions';
 
 export default function authors(state = [], action) {
-  switch (action.type) {
-  	case types.ADD_AUTHOR:
-  		return [...state, action.author];
-    default:
-      return state;
+  switch(action.type){
+	case AUTHOR_SUCCESS:
+	  return [...action.data];
+	case AUTHOR_FAILURE:
+	  console.log(action.message);
+	case AUTHOR_REQUEST:
+	  return [];
   }
-}
-
-export function getAuthors() {
-  return new ApiClient().getAuthors();
+  return state;
 }
