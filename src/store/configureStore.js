@@ -1,18 +1,16 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import { reduxReactRouter } from 'redux-router'
-import createHistory from 'history/lib/createBrowserHistory'
-import routes from '../routes'
-import thunk from 'redux-thunk'
-import api from '../middleware/api'
-import rootReducer from '../reducers'
+import { apiMiddleware } from 'redux-api-middleware'
 
-const finalCreateStore = compose(
-  applyMiddleware(thunk, api),
-  reduxReactRouter({ routes, createHistory }),
-)(createStore)
+import reducers from '../reducers'
+import DevTools from './../components/DevTools'
+
+const createStoreWithMiddleware = compose(
+      applyMiddleware(apiMiddleware),
+      DevTools.instrument()
+    )(createStore);
 
 export default function configureStore(initialState) {
-  const store = finalCreateStore(rootReducer, initialState)
+  const store = createStoreWithMiddleware(reducers, initialState)
 
   if (module.hot) {
     module.hot.accept('../reducers', () => {

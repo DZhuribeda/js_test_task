@@ -1,14 +1,16 @@
-import { BOOK_REQUEST, BOOK_SUCCESS, BOOK_FAILURE } from '../actions';
-
+import { REQUEST, SUCCESS, FAILURE } from '../actions';
+import mock_json from './../mock_data';
 
 export default function books(state = [], action) {
   switch(action.type){
-	case BOOK_SUCCESS:
-	  return [...action.data];
-	case BOOK_FAILURE:
-	  console.log(action.message);
-	case BOOK_REQUEST: 
-	  return [];
+    case SUCCESS:
+      return [...mock_json.books];
+    case FAILURE:
+      console.log(action.message);
+      return [];
+    case REQUEST: 
+      return [];
+    default:
+      return [];
   }
-  return state;
 }

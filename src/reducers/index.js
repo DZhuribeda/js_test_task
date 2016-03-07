@@ -1,13 +1,13 @@
-import { routerStateReducer as router } from 'redux-router';
+import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux';
-import books from "./books";
-import authors from "./authors";
+import books from './books';
+import authors from './authors';
 
 
-const rootReducer = combineReducers({
-	authors,
-	books,
-	router
+const reducers = combineReducers({
+  authors,
+  books,
+  routing
 });
 
-export default rootReducer;
+export default reducers;

@@ -1,13 +1,16 @@
-import { AUTHOR_REQUEST, AUTHOR_SUCCESS, AUTHOR_FAILURE } from '../actions';
+import { REQUEST, SUCCESS, FAILURE } from '../actions';
+import mock_json from './../mock_data';
 
 export default function authors(state = [], action) {
   switch(action.type){
-	case AUTHOR_SUCCESS:
-	  return [...action.data];
-	case AUTHOR_FAILURE:
-	  console.log(action.message);
-	case AUTHOR_REQUEST:
-	  return [];
+    case SUCCESS:
+      return [...mock_json.authors];
+    case FAILURE:
+      console.log(action.message);
+      return [];
+    case REQUEST:
+      return [];
+    default:
+      return [];
   }
-  return state;
 }
