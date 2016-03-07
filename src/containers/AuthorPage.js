@@ -1,9 +1,9 @@
 'use strict';
 
-import React, {Component, PropTypes} from 'react';
-import { connect } from 'react-redux';
-import {loadAuthors, loadBooks} from '../actions';
-import BookCard from './../components/BookCard.js'
+import React, {Component, PropTypes} from 'react'
+import { connect } from 'react-redux'
+import {loadAuthors, loadBooks} from '../actions'
+import AuthorView from './../components/AuthorView.js'
 
 class AuthorPage extends Component {
 
@@ -14,28 +14,15 @@ class AuthorPage extends Component {
   
 
   render() {
-    const { authors, books } = this.props
+    const { authors } = this.props
     const { author_id } = this.props.params;
-    let author = {};
-    let Books;
-    author= authors.find( author => +author.id === +author_id);
-    Books = author.books.map( book => {
-      let book_id = book.id;
-      book = books.find((book) => +book.id === +book_id)
-      return (<BookCard key={book.id} data={book}/>);
-    });
+    const author = authors.find( author => +author.id === +author_id);
     
-    return (
-      <div>
-        <h1>{author.name}</h1>
-        <br/>
-        <p>{author.biography}</p>
-        <br/>
-        <div className="mdl-grid">
-          {Books}
-        </div>
-      </div>
-      );
+    return author 
+            ? <AuthorView name={author.name}
+                        biography={author.biography} 
+                        books={author.books}/>
+            : null;
   }
 }
 
